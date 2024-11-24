@@ -6,13 +6,23 @@ const catchASync = require('./utils/catchAsync.js');
 
 const getAllTasks = catchASync(async (req, res,next) => {
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit,10) || 5;
+    const skip = (page - 1) * limit;
 
-    const query =  Task.find({});
+
+    const query =  Task.find({}).skip(skip).limit(limit).sort({createdAt: -1});
     const result = await query.select('-__v');
+    const total = await Task.countDocuments();
+    const totalPage = Math.ceil(total / limit);
+    const currentPage = page;
+
 
     res.status(HttpStatusCode.OK).json({
         status:'success',
-        results: result.length,
+        total: total,
+        totalPage: totalPage,
+        currentPage: currentPage,
         data:{
             tasks: result
         }
