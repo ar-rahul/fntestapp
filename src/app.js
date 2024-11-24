@@ -35,6 +35,7 @@ app.use(morgan('common'));
 
 app.use((req, res, next) => {
    console.log('Hello from middleware');
+   next();
 });
 
 
